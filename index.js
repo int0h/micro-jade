@@ -4,5 +4,5 @@ exports.renderWrapper = require('./render.js').renderWrapper;
 
 exports.make = function(code, data){
 	var parsed = exports.parse(code);
-	return exports.render(parsed);
+	return exports.render(parsed, data);
 };

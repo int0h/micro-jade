@@ -1,5 +1,5 @@
-var StrTpl = require('fg/utils/strTpl.js');
-var utils = require('fg/utils.js');
+var utils = require('./utils.js');
+var StrTpl = require('./strTpl.js');
 
 var selfClosingTags = ["area", "base", "br", "col", 
 	"command", "embed", "hr", "img", 
@@ -12,6 +12,12 @@ var especialTags = {
 		var val = tagInfo.innerHTML.replace(/\n/g, '').trim();
 		return '<!DOCTYPE ' + val + '>';
 	}
+};
+
+function objFor(obj, fn){
+	for (var i in obj){
+		fn(obj[i], i, obj);
+	};
 };
 
 function renderTagWrapper(tagInfo){
@@ -48,7 +54,7 @@ exports.renderTag = renderTag;
 
 function renderAttrs(attrs, data){
 	var resAttrs = {};
-	utils.objFor(attrs, function(value, name){
+	objFor(attrs, function(value, name){
 		var nameTpl = new StrTpl(name);
 		var valueTpl = new StrTpl(value);
 		resAttrs[nameTpl.render(data)] = valueTpl.render(data);		
@@ -59,7 +65,7 @@ exports.renderAttrs = renderAttrs;
 
 function getAttrsPaths(attrs){
 	var paths = [];
-	utils.objFor(attrs, function(value, name){
+	objFor(attrs, function(value, name){
 		var nameTpl = new StrTpl(name);
 		var valueTpl = new StrTpl(value);
 		paths = paths.concat(nameTpl.getPaths(), valueTpl.getPaths());		
@@ -69,7 +75,7 @@ function getAttrsPaths(attrs){
 exports.getAttrsPaths = getAttrsPaths;
 
 
-function render(ast){
+function render(ast, data){
 	if (ast.type == "comment"){
 		return "";
 	};
@@ -77,12 +83,22 @@ function render(ast){
 		return ast.text;
 	};
 	if (ast.type == "root"){
-		return ast.children.map(render).join('');
+		return ast.children.map(function(child){
+			return render(child, data);
+		}).join('');
 	};
 	if (ast.type != "tag"){
 		return "";
+	};	
+	var inner;
+	if (ast.value){
+		var path = ast.value.split('.');
+		var inner = utils.objPath(path, data);
+	}else{
+		inner = ast.children.map(function(child){
+			return render(child, data);
+		}).join('');
 	};
-	var inner = ast.children.map(render).join('');
 	return renderTag({
 		name: ast.tagName,
 		attrs: ast.attrs,
@@ -91,7 +107,7 @@ function render(ast){
 };
 exports.render = render;
 
-function renderWrapper(ast){
+function renderWrapper(ast, data){
 	if (ast.type != "tag"){
 		return [];
 	};

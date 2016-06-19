@@ -1,6 +1,24 @@
 {
   "name": "micro-jade",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js"
+  "version": "0.0.1",
+  "description": "The main purpose of this small library is to allow using the simplest Jade (pug) templates without having Jade(pug) installed. It is not support any logic inside template. So operators 'if', 'each' etc. are not supported. Also original Jade does a lot of optimisation while micro-jade doesn't.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/int0h/micro-jade.git"
+  },
+  "keywords": [
+    "jade",
+    "template",
+    "pug"
+  ],
+  "author": "int0h",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/int0h/micro-jade/issues"
+  },
+  "homepage": "https://github.com/int0h/micro-jade#readme"
 }
